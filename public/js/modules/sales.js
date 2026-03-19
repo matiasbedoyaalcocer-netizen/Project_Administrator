@@ -78,8 +78,8 @@ export default {
                 <div class="tip-banner">
                     <i class='bx bx-cloud-upload'></i>
                     <div>
-                        <h3>Carga Activa de Compras a Node.js</h3>
-                        <p>Ingresa las facturas de tus proveedores. Todo se guardará permanentemente en la nube y sincronizará en tiempo real el Inventario Global.</p>
+                        <h3>Registro de Facturas</h3>
+                        <p>Ingresa las facturas de tus proveedores. Todo se guardará en el servidor y sincronizará en tiempo real tu Inventario Global.</p>
                     </div>
                 </div>
 
@@ -158,7 +158,7 @@ export default {
                     </div>
 
                     <button class="btn" id="btn-generate-pdf" style="margin-bottom: 12px; background-color: var(--primary);">
-                        <i class='bx bxs-file-pdf'></i> Subir Compra (Atlas) + Actualizar Stocks
+                        <i class='bx bx-check'></i> Guardar Compra y Actualizar Stocks
                     </button>
                     <button class="btn btn-secondary" id="btn-cancel-sale">
                         Volver
@@ -238,7 +238,7 @@ export default {
 
              // Block User Interactions
              btnGenerate.disabled = true;
-             btnGenerate.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Escribiendo en Atlas...";
+             btnGenerate.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Guardando datos...";
 
              const totals = this.calculateTotals();
 
@@ -290,7 +290,7 @@ export default {
                  this.generateAndDownloadPDF(newPurchase, viewList, viewForm);
 
              } catch (err) {
-                 alert("Fallo crítico de red transaccional intentando enviar a Atlas.");
+                 alert("Ocurrió un error guardando la información.");
                  console.error(err);
                  btnGenerate.disabled = false;
                  btnGenerate.innerHTML = "<i class='bx bxs-file-pdf'></i> Subir Compra (Atlas) + Actualizar Stocks";
@@ -358,7 +358,7 @@ export default {
                 <div style="display:flex; justify-content:space-between; border-bottom: 2px solid #ef4444; padding-bottom: 20px; margin-bottom: 30px;">
                     <div>
                         <h1 style="color: #ef4444; margin:0; font-size:32px;">Registro de Compra</h1>
-                        <p style="margin:5px 0; color:#666;">Sistema ERP Interno - Atlas Node Sync</p>
+                        <p style="margin:5px 0; color:#666;">Sistema ERP Interno - Consolidado</p>
                     </div>
                     <div style="text-align:right;">
                         <h2 style="margin:0; font-size:24px; color:#333;">COMPRA INGRESO</h2>

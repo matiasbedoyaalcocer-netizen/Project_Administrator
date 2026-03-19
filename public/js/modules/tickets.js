@@ -19,8 +19,8 @@ export default {
         this.container.innerHTML = `
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 60vh; color: var(--primary);">
                 <i class='bx bx-loader-alt bx-spin' style='font-size: 4rem; margin-bottom: 20px;'></i>
-                <h3 style="color:var(--text-main);">Descargando Tickets Rápidos...</h3>
-                <p style="color:var(--text-muted);">Sincronizando caja con la Nube.</p>
+                <h3 style="color:var(--text-main);">Descargando Gastos...</h3>
+                <p style="color:var(--text-muted);">Cargando información segura.</p>
             </div>
         `;
         
@@ -76,7 +76,7 @@ export default {
                 <div class="tip-banner">
                     <i class='bx bx-camera'></i>
                     <div>
-                        <h3>Caja y Gastos Corrientes (MongoDB)</h3>
+                        <h3>Caja y Gastos Corrientes</h3>
                         <p>Anota y carga sueldos, impuestos o tickets en efectivo sin remito. Todo gasto documentado aquí afecta directamente la Tasa de Ganancias final.</p>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ export default {
             <div id="tickets-form-view" style="display: none;">
                 <div class="card">
                     <div class="card-title">
-                        <i class='bx bx-upload'></i> Ingresar Gasto al ERP Cloud
+                        <i class='bx bx-upload'></i> Ingresar Gasto al ERP
                     </div>
                     <div class="form-group">
                         <label>Concepto de Salida</label>
@@ -121,11 +121,11 @@ export default {
                     <div class="form-group">
                         <label>Foto Ciber-Comprobante (Opcional)</label>
                         <input type="file" id="ticket-image" class="form-control" accept="image/*">
-                        <small style="color:var(--text-muted); display:block; margin-top:5px;">El ticket se subirá codificado directamente al clúster de base de datos para no perderlo.</small>
+                        <small style="color:var(--text-muted); display:block; margin-top:5px;">El ticket se subirá directamente y de forma segura para no perderlo.</small>
                     </div>
                     
                     <button class="btn" id="btn-save-ticket" style="background-color: var(--primary); margin-bottom: 12px; font-size:1.1rem; padding: 15px;">
-                        <i class='bx bx-cloud-upload'></i> Subir Gasto
+                        <i class='bx bx-upload'></i> Registrar Gasto
                     </button>
                     <button class="btn btn-secondary" id="btn-cancel-ticket">Cancelar</button>
                 </div>
@@ -145,14 +145,14 @@ export default {
 
         document.querySelectorAll('.btn-delete-ticket').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                if(confirm('¿Seguro quieres reportar como NULO este ticket? (Borrado Permanente de AWS/Mongo)')) {
+                if(confirm('¿Seguro quieres reportar como NULO este ticket? (Borrado Permanente)')) {
                     const id = e.currentTarget.dataset.id;
                     try {
                         e.currentTarget.innerHTML = '<i class="bx bx-loader bx-spin"></i>';
                         await API.deleteTicket(id);
                         await this.render(this.container);
                     } catch (err) {
-                        alert("Error de validación eliminando nodo en Atlas. Reintenta.");
+                        alert("Error de validación eliminando el ticket. Reintenta.");
                         await this.render(this.container);
                     }
                 }
@@ -189,7 +189,7 @@ export default {
                 }
 
                 btnSave.disabled = true;
-                btnSave.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Subiendo a Base de Datos...";
+                btnSave.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Guardando en el sistema...";
 
                 const loadBase64 = (file) => new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -220,9 +220,9 @@ export default {
                     await API.saveTicket(newTicket);
                     await this.render(this.container);
                 } catch(err) {
-                    alert("Fallo emitiendo escritura. Node puede estar apagado.");
+                    alert("Fallo emitiendo escritura. Verifica la conexión.");
                     btnSave.disabled = false;
-                    btnSave.innerHTML = "<i class='bx bx-cloud-upload'></i> Subir Gasto";
+                    btnSave.innerHTML = "<i class='bx bx-upload'></i> Registrar Gasto";
                 }
             });
         }

@@ -6,7 +6,7 @@ export default {
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:60vh; color:var(--primary);">
                 <i class='bx bx-pie-chart-alt-2 bx-flashing' style='font-size: 4rem; margin-bottom: 20px;'></i>
                 <h3 style="color:var(--text-main);">Calculando Índices de Gasto...</h3>
-                <p style="color:var(--text-muted);">Procesando datos desde MongoDB Atlas</p>
+                <p style="color:var(--text-muted);">Procesando información del sistema...</p>
             </div>
         `;
 
@@ -21,7 +21,7 @@ export default {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class='bx bx-bar-chart-alt-2'></i>
-                        <p>No hay salidas de dinero registradas en la nube para analizar.</p>
+                        <p>No hay salidas de dinero registradas para analizar.</p>
                     </div>
                 `;
                 return;
@@ -32,7 +32,7 @@ export default {
                     <i class='bx bx-pie-chart-alt-2'></i>
                     <div>
                         <h3>Análisis General de Costos</h3>
-                        <p>Distribución matemática exacta de tus operaciones procesadas desde el servidor Node.js.</p>
+                        <p>Distribución matemática exacta de tus operaciones extraídas desde tu bóveda central.</p>
                     </div>
                 </div>
                 
@@ -70,7 +70,7 @@ export default {
                 <div style="padding:40px;text-align:center;color:var(--danger);">
                     <i class='bx bx-error-circle' style="font-size:3rem;"></i>
                     <h2>Fallo Analítico</h2>
-                    <p>No se pudo contactar a Node.js para las métricas.</p>
+                    <p>No se pudo acceder a las métricas del sistema.</p>
                 </div>
             `;
         }

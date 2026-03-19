@@ -11,8 +11,8 @@ export default {
         this.container.innerHTML = `
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height: 60vh; color: var(--primary);">
                 <i class='bx bx-loader-alt bx-spin' style='font-size: 4rem; margin-bottom: 20px;'></i>
-                <h3 style="color:var(--text-main);">Sincronizando con MongoDB Atlas...</h3>
-                <p style="color:var(--text-muted);">Obteniendo el Inventario global desde la nube</p>
+                <h3 style="color:var(--text-main);">Cargando Inventario...</h3>
+                <p style="color:var(--text-muted);">Sincronizando base de datos global.</p>
             </div>
         `;
         
@@ -72,7 +72,7 @@ export default {
                 <div class="card">
                     <div class="card-title" style="justify-content:space-between;">
                         <div style="display:flex; align-items:center; gap:12px;">
-                            <i class='bx bx-cloud' style="color:var(--primary);"></i> Almacén Cloud Sincronizado
+                            <i class='bx bx-cloud' style="color:var(--primary);"></i> Almacén Centralizado
                         </div>
                         <button class="btn" id="btn-new-product" style="width:auto; padding:12px 20px; font-size:1rem;"><i class='bx bx-plus'></i> Nuevo Producto</button>
                     </div>
@@ -101,7 +101,7 @@ export default {
                     </div>
                     
                     <button class="btn" id="btn-save-product" style="margin-bottom: 12px; background-color: var(--success);">
-                        <i class='bx bx-cloud-upload'></i> Subir a Base de Datos
+                        <i class='bx bx-upload'></i> Guardar y Sincronizar
                     </button>
                     <button class="btn btn-secondary" id="btn-cancel-product">
                         Cancelar
@@ -196,7 +196,7 @@ export default {
                     this.products.push(newProd);
                     this.renderView();
                 } catch(err) {
-                    btnSave.innerHTML = "<i class='bx bx-cloud-upload'></i> Subir a Base de Datos";
+                    btnSave.innerHTML = "<i class='bx bx-upload'></i> Guardar y Sincronizar";
                     btnSave.disabled = false;
                     alert("Falló la escritura en MongoDB Atlas. Intenta nuevamente.");
                 }

@@ -39,14 +39,14 @@ export default {
             <div class="tip-banner">
                 <i class='bx bx-cloud' style="font-size:2rem; color:var(--primary);"></i>
                 <div style="flex:1;">
-                    <h3>ERP Cloud - Todo en Línea</h3>
-                    <p>Estas visualizando en tiempo real la información hospedada en <b>MongoDB Atlas</b> de forma segura e interconectada en todos tus dispositivos.</p>
+                    <h3>Software ERP Central</h3>
+                    <p>Estas visualizando en tiempo real la información de tu comercio de forma centralizada y segura en todos tus dispositivos.</p>
                 </div>
             </div>
 
             <div class="dashboard-grid">
                 <div class="metric-card">
-                    <div class="metric-title">Gasto Global Acumulado (Cloud)</div>
+                    <div class="metric-title">Gasto Global Acumulado</div>
                     <div class="metric-value" style="color:var(--danger); font-size: 2.2rem;">-$${globalExpense.toFixed(2)}</div>
                     <div class="metric-trend text-muted">Abarca compras a proveedores y caja</div>
                 </div>

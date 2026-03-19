@@ -15,7 +15,7 @@ export default {
         this.container.innerHTML = `
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:60vh; color:var(--primary);">
                 <i class='bx bx-line-chart bx-flashing' style='font-size: 4rem; margin-bottom: 20px;'></i>
-                <h3 style="color:var(--text-main);">Analizando Históricos en Atlas...</h3>
+                <h3 style="color:var(--text-main);">Analizando Datos Históricos...</h3>
             </div>
         `;
         try {
@@ -61,7 +61,7 @@ export default {
                 <i class='bx bx-radar'></i>
                 <div>
                     <h3>Comparador de Precios Histórico</h3>
-                    <p>Mide la inflación o el ahorro contra tus precios previos alimentado 100% de la nube (MongoDB).</p>
+                    <p>Mide la inflación o el ahorro contra tus precios previos de forma inteligente y automatizada.</p>
                 </div>
             </div>
 
@@ -226,7 +226,7 @@ export default {
                     price: price
                 });
 
-                btnAdd.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Subiendo a MongoDB...";
+                btnAdd.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Guardando...";
                 btnAdd.disabled = true;
 
                 try {
@@ -241,7 +241,7 @@ export default {
                     
                     this.renderDetails();
                 } catch(err) {
-                    alert("Fallo emitiendo escritura. Verifica que Atlas responda.");
+                    alert("Fallo emitiendo escritura. Verifica tu conexión a internet.");
                     btnAdd.innerHTML = "Actualizar Nube";
                     btnAdd.disabled = false;
                 }
