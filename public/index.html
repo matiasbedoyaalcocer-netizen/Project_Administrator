@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestión ERP Pro</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4338ca">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+      .no-print { display: block; }
+      .print-only { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- MENÚ LATERAL PERMANENTE (Siempre Visible) -->
+    <aside class="side-menu" id="side-menu">
+        <div class="side-menu-header">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, var(--primary) 0%, #312e81 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.4);">E</div>
+                <div>
+                    <h3 style="font-size: 1.35rem; margin: 0; color:var(--text-main); font-weight: 800; letter-spacing: -0.5px;">ERP Móvil</h3>
+                    <span style="font-size: 0.95rem; color: var(--primary); font-weight:700;">v2.0 Pro</span>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="side-menu-list">
+            <li class="menu-label">Panel Principal</li>
+            <li><a href="#" class="nav-item-side active" data-target="dashboard"><i class='bx bx-home-alt-2'></i> Inicio</a></li>
+            
+            <li class="menu-label">Operaciones</li>
+            <li><a href="#" class="nav-item-side" data-target="sales"><i class='bx bx-cart-download'></i> Desglose de Compras</a></li>
+            <li><a href="#" class="nav-item-side" data-target="tickets"><i class='bx bx-receipt'></i> Gestión de Gastos</a></li>
+            
+            <li class="menu-label">Control</li>
+            <li><a href="#" class="nav-item-side" data-target="inventory"><i class='bx bx-box'></i> Inventario de Stock</a></li>
+            <li><a href="#" class="nav-item-side" data-target="comparator"><i class='bx bx-trending-up'></i> Comparar Precios</a></li>
+            <li><a href="#" class="nav-item-side" data-target="analysis"><i class='bx bx-pie-chart-alt-2'></i> Análisis General</a></li>
+            
+            <hr>
+            <li><a href="#" class="nav-item-side" onclick="alert('Funciones Pro')"><i class='bx bx-cloud-download'></i> Exportar Base de Datos</a></li>
+            <li><a href="#" class="nav-item-side" data-target="settings"><i class='bx bx-cog'></i> Ajustes Generales</a></li>
+        </ul>
+    </aside>
+
+    <!-- WRAPPER PRINCIPAL (Ocupa la zona a la derecha del menú permanente) -->
+    <div class="main-wrapper">
+        <!-- HEADER FIJO -->
+        <header class="app-header">
+            <h1 id="page-title">Panel de Control</h1>
+            
+            <button class="icon-btn tooltip-parent" aria-label="Perfil">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=4338ca&color=fff&rounded=true&bold=true" style="width: 44px; height: 44px; border-radius: 50%;">
+            </button>
+        </header>
+
+        <!-- CONTENIDO CENTRAL -->
+        <main id="app-content" class="app-content">
+            <!-- Vistas (Dashboard, Ventas, Gastos...) inyectadas dinámicamente -->
+        </main>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+    <script>
+        // PWA Setup
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js');
+            });
+        }
+    </script>
+</body>
+</html>
