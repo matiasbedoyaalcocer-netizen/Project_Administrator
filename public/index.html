@@ -103,6 +103,15 @@
     <script type="module" src="js/app.js"></script>
     <script>
         // Funcionalidad Modal Global
+        window.openImageModal = function(src) {
+            const modal = document.getElementById('image-modal');
+            const content = document.getElementById('modal-image-content');
+            if(modal && content) {
+                content.src = src;
+                modal.style.display = 'flex';
+            }
+        };
+
         document.getElementById('close-modal-btn').addEventListener('click', () => {
             document.getElementById('image-modal').style.display = 'none';
             document.getElementById('modal-image-content').src = '';

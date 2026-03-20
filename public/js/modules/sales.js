@@ -428,7 +428,7 @@ export default {
             margin:       0.5,
             filename:     'Reporte_Compra_' + purchaseObj.supplier.replace(/ /g, '_') + '.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: true },
+            html2canvas:  { scale: 2, useCORS: true, windowWidth: 1000, width: 800 },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
