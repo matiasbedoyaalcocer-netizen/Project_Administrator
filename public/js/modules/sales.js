@@ -368,8 +368,9 @@ export default {
         const pdfContainer = document.createElement('div');
         pdfContainer.style.background = 'white';
         pdfContainer.style.color = 'black';
-        pdfContainer.style.padding = '40px';
-        pdfContainer.style.width = '800px';
+        pdfContainer.style.padding = '30px';
+        pdfContainer.style.width = '100%';
+        pdfContainer.style.boxSizing = 'border-box';
         pdfContainer.style.fontFamily = "'Helvetica Neue', Helvetica, Arial, sans-serif";
         
         pdfContainer.innerHTML = `
@@ -386,12 +387,12 @@ export default {
                     </div>
                 </div>
                 
-                <div style="margin-bottom: 40px;">
+                <div style="margin-bottom: 30px;">
                     <h3 style="margin-bottom:10px; font-size:18px; color:#ef4444;">A FAVOR DEL PROVEEDOR/COMERCIO:</h3>
                     <p style="margin:0; font-size:16px;"><b>${purchaseObj.supplier || purchaseObj.client || 'Proveedor General'}</b></p>
                 </div>
 
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
                     <thead>
                         <tr style="background:#fef2f2; text-align:left;">
                             <th style="padding: 12px 10px; border-bottom:2px solid #ddd;">Descripción</th>
@@ -425,18 +426,18 @@ export default {
         `;
 
         const opt = {
-            margin:       0.5,
+            margin:       0.4,
             filename:     'Reporte_Compra_' + purchaseObj.supplier.replace(/ /g, '_') + '.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, windowWidth: 1000, width: 800 },
+            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
         if (window.html2pdf) {
             // Using raw HTML string bypasses aggressive browser DOM viewport rendering bugs.
-            const rawHTML = pdfContainer.outerHTML;
+            // const rawHTML = pdfContainer.outerHTML; // This line was commented out in the original, but the change implies using pdfContainer directly.
 
-            window.html2pdf().set(opt).from(rawHTML).save().then(async () => {
+            window.html2pdf().set(opt).from(pdfContainer).save().then(async () => {
                  await this.render(this.container); 
             }).catch(async err => {
                  console.error("PDF Error:", err);
