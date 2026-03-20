@@ -122,6 +122,9 @@ export default {
                         <label>Foto Ciber-Comprobante (Opcional)</label>
                         <input type="file" id="ticket-image" class="form-control" accept="image/*">
                         <small style="color:var(--text-muted); display:block; margin-top:5px;">El ticket se subirá directamente y de forma segura para no perderlo.</small>
+                        <div id="ocr-status" style="display:none; margin-top:10px; font-weight:600; font-size: 0.9rem; color: var(--primary);">
+                            <i class='bx bx-loader-alt bx-spin'></i> Analizando recibo con IA...
+                        </div>
                     </div>
                     
                     <button class="btn" id="btn-save-ticket" style="background-color: var(--primary); margin-bottom: 12px; font-size:1.1rem; padding: 15px;">
@@ -223,6 +226,75 @@ export default {
                     alert("Fallo emitiendo escritura. Verifica la conexión.");
                     btnSave.disabled = false;
                     btnSave.innerHTML = "<i class='bx bx-upload'></i> Registrar Gasto";
+                }
+            });
+        }
+
+        const fileInput = document.getElementById('ticket-image');
+        if(fileInput) {
+            fileInput.addEventListener('change', async (e) => {
+                if (!e.target.files || !e.target.files[0]) return;
+                
+                const file = e.target.files[0];
+                const ocrStatus = document.getElementById('ocr-status');
+                const conceptInput = document.getElementById('ticket-concept');
+                const amountInput = document.getElementById('ticket-amount');
+
+                ocrStatus.style.display = 'block';
+                ocrStatus.style.color = "var(--primary)";
+                ocrStatus.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Analizando recibo con IA...";
+                
+                try {
+                    const result = await Tesseract.recognize(file, 'spa', {
+                        logger: m => {
+                            if(m.status === 'recognizing text') {
+                                ocrStatus.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> Escaneando... ${Math.round(m.progress * 100)}%`;
+                            }
+                        }
+                    });
+                    
+                    const text = result.data.text;
+                    let finalAmount = null;
+                    
+                    // Regex para encontrar montos ($12.34, 12,34)
+                    const amountMatches = text.match(/(?:TOTAL|IMPORTE)?\s*[\$\€]?\s*(\d+[.,]\d{2})/gi);
+                    if (amountMatches) {
+                         const amounts = amountMatches.map(m => {
+                             const numStr = m.replace(/[^\d.,]/g, '').replace(',', '.');
+                             return parseFloat(numStr);
+                         }).filter(n => !isNaN(n));
+                         if (amounts.length > 0) finalAmount = Math.max(...amounts);
+                    } else {
+                         const numMatches = text.match(/\b\d+([.,]\d{2})\b/g);
+                         if (numMatches) {
+                             const amounts = numMatches.map(m => parseFloat(m.replace(',', '.'))).filter(n => !isNaN(n));
+                             if (amounts.length > 0) finalAmount = Math.max(...amounts);
+                         }
+                    }
+
+                    if (finalAmount && !amountInput.value) {
+                        amountInput.value = finalAmount.toFixed(2);
+                    }
+
+                    // Extraer concepto (primera línea >3 chars que no sea total)
+                    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 3 && !l.toLowerCase().includes('total'));
+                    if (lines.length > 0) {
+                        let vendor = lines[0];
+                        vendor = vendor.charAt(0).toUpperCase() + vendor.slice(1).toLowerCase();
+                        if (!conceptInput.value) {
+                            conceptInput.value = vendor;
+                        }
+                    }
+
+                    ocrStatus.innerHTML = "<i class='bx bx-check-circle'></i> Análisis IA completado";
+                    ocrStatus.style.color = "#16a34a"; // Success color
+                    setTimeout(() => { ocrStatus.style.display = 'none'; ocrStatus.style.color = "var(--primary)"; }, 4000);
+
+                } catch(err) {
+                    console.error("OCR Falló:", err);
+                    ocrStatus.innerHTML = "<i class='bx bx-error-circle'></i> Error procesando imagen (IA no disponible)";
+                    ocrStatus.style.color = "var(--danger)";
+                    setTimeout(() => { ocrStatus.style.display = 'none'; ocrStatus.style.color = "var(--primary)"; }, 4000);
                 }
             });
         }
