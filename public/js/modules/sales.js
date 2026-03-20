@@ -414,11 +414,19 @@ export default {
         };
 
         if (window.html2pdf) {
+            // Append temporarily to the DOM so it renders styling and dimensions correctly
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            pdfContainer.style.top = '-9999px';
+            document.body.appendChild(pdfContainer);
+
             window.html2pdf().set(opt).from(pdfContainer).save().then(async () => {
+                 document.body.removeChild(pdfContainer);
                  // Refresh view strictly pulling from Atlas to guarantee 1:1 true representation of data commit
                  await this.render(this.container); 
             }).catch(async err => {
                  console.error(err);
+                 if(document.body.contains(pdfContainer)) document.body.removeChild(pdfContainer);
                  await this.render(this.container);
             });
         }
