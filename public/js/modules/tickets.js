@@ -44,7 +44,7 @@ export default {
             const sorted = [...this.tickets].sort((a,b) => new Date(b.date) - new Date(a.date));
             sorted.forEach(t => {
                 const dateStr = new Date(t.date).toLocaleDateString();
-                const imageStr = t.image ? `<img src="${t.image}" style="object-fit:cover; border-radius:12px; height:120px; width:100px;">` : `<i class='bx bx-receipt' style="font-size:3rem; color:var(--text-muted);"></i>`;
+                const imageStr = t.image ? `<img src="${t.image}" class="receipt-thumbnail" data-src="${t.image}" style="object-fit:cover; border-radius:12px; height:120px; width:100px; cursor:pointer;" title="Click para ver en grande">` : `<i class='bx bx-receipt' style="font-size:3rem; color:var(--text-muted);"></i>`;
                 
                 listHtml += `
                     <div class="list-item" style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -158,6 +158,17 @@ export default {
                         alert("Error de validación eliminando el ticket. Reintenta.");
                         await this.render(this.container);
                     }
+                }
+            });
+        });
+
+        document.querySelectorAll('.receipt-thumbnail').forEach(img => {
+            img.addEventListener('click', (e) => {
+                const modal = document.getElementById('image-modal');
+                const modalImg = document.getElementById('modal-image-content');
+                if(modal && modalImg) {
+                    modalImg.src = e.currentTarget.dataset.src;
+                    modal.style.display = 'flex';
                 }
             });
         });
