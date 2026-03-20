@@ -8,6 +8,8 @@ import SettingsView from './modules/settings.js';
 
 const App = {
     currentView: 'dashboard',
+    tabsOrder: ['dashboard', 'sales', 'tickets', 'inventory', 'analysis'],
+    deferredPrompt: null,
     
     init() {
         this.cacheDOM();
@@ -16,29 +18,112 @@ const App = {
     },
     
     cacheDOM() {
-        // En este layout permanente, el menú principal es el sidebar superior
         this.sideNavItems = document.querySelectorAll('.side-menu .nav-item-side');
+        this.bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item-bottom');
         this.appContent = document.getElementById('app-content');
         this.pageTitle = document.getElementById('page-title');
+        
+        // PWA banner
+        this.pwaBanner = document.getElementById('pwa-install-banner');
+        this.pwaInstallBtn = document.getElementById('pwa-install-btn');
+        this.pwaCloseBtn = document.getElementById('pwa-close-btn');
     },
     
     bindEvents() {
-        this.sideNavItems.forEach(item => {
+        // Navigation Clicks
+        const navElements = [...this.sideNavItems, ...this.bottomNavItems];
+        navElements.forEach(item => {
             item.addEventListener('click', (e) => {
                 const target = e.currentTarget.dataset.target;
                 if(target) {
                     e.preventDefault();
                     if(target !== this.currentView) {
-                        this.loadView(target);
-                        this.updateNav(target);
+                        this.navigateTo(target, true);
                     }
                 }
             });
         });
+
+        // Swipe Support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        this.appContent.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        this.appContent.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            this.handleSwipe(touchStartX, touchEndX);
+        }, {passive: true});
+
+        // PWA Install Prompt handling
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            if(this.pwaBanner) this.pwaBanner.style.display = 'flex';
+        });
+
+        if(this.pwaInstallBtn) {
+            this.pwaInstallBtn.addEventListener('click', async () => {
+                if(this.pwaBanner) this.pwaBanner.style.display = 'none';
+                if(this.deferredPrompt) {
+                    this.deferredPrompt.prompt();
+                    const { outcome } = await this.deferredPrompt.userChoice;
+                    console.log(`User interaction with PWA prompt: ${outcome}`);
+                    this.deferredPrompt = null;
+                }
+            });
+        }
+        
+        if(this.pwaCloseBtn) {
+            this.pwaCloseBtn.addEventListener('click', () => {
+                if(this.pwaBanner) this.pwaBanner.style.display = 'none';
+            });
+        }
+    },
+
+    handleSwipe(start, end) {
+        const threshold = 70; // min swipe distance
+        if(start - end > threshold) {
+            this.swipeTo(1); // Swipe left -> Next tab
+        } else if(end - start > threshold) {
+            this.swipeTo(-1); // Swipe right -> Prev tab
+        }
+    },
+
+    swipeTo(direction) {
+        const currentIndex = this.tabsOrder.indexOf(this.currentView);
+        if(currentIndex === -1) return;
+        const nextIndex = currentIndex + direction;
+        
+        if(nextIndex >= 0 && nextIndex < this.tabsOrder.length) {
+            const dest = this.tabsOrder[nextIndex];
+            this.navigateTo(dest, direction > 0 ? 'left' : 'right');
+        }
+    },
+
+    navigateTo(targetView, direction) {
+        if (direction === true) { 
+            const curIdx = this.tabsOrder.indexOf(this.currentView);
+            const tarIdx = this.tabsOrder.indexOf(targetView);
+            direction = (tarIdx > curIdx) ? 'left' : 'right';
+        }
+
+        const animClass = direction === 'left' ? 'slide-in-right' : 'slide-in-left';
+        
+        // Retrigger animation
+        this.appContent.classList.remove('slide-in-right', 'slide-in-left');
+        void this.appContent.offsetWidth; // Force reflow
+        this.appContent.classList.add(animClass);
+
+        this.loadView(targetView);
+        this.updateNav(targetView);
     },
     
     updateNav(targetView) {
-        this.sideNavItems.forEach(item => {
+        const allNavs = [...this.sideNavItems, ...this.bottomNavItems];
+        allNavs.forEach(item => {
             if(item.dataset.target === targetView) {
                 item.classList.add('active');
             } else {
