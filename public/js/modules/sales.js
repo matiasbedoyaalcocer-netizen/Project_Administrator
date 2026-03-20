@@ -351,98 +351,112 @@ export default {
     },
 
     generateAndDownloadPDF(purchaseObj, viewList, viewForm) {
-        const dateStr = new Date(purchaseObj.date).toLocaleDateString();
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("Error: Librería jsPDF no encontrada en el sistema.");
+            return;
+        }
         
-        let itemsRows = '';
+        const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+        const dateStr = new Date(purchaseObj.date).toLocaleDateString();
+
+        // 1. Cabecera (Izquierda)
+        doc.setTextColor(239, 68, 68); // #ef4444
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("Registro de Compra", 15, 20);
+        
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Sistema ERP Interno - Consolidado", 15, 26);
+
+        // Cabecera (Derecha)
+        doc.setTextColor(50, 50, 50);
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("COMPRA INGRESO", 195, 20, { align: 'right' });
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Folio: 0001-${purchaseObj.id.toString().slice(-6)}`, 195, 26, { align: 'right' });
+        doc.text(`Fecha: ${dateStr}`, 195, 31, { align: 'right' });
+
+        // Línea Divisoria Roja
+        doc.setDrawColor(239, 68, 68);
+        doc.setLineWidth(0.6);
+        doc.line(15, 36, 195, 36);
+
+        // 2. Proveedor
+        doc.setTextColor(239, 68, 68);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("A FAVOR DEL PROVEEDOR/COMERCIO:", 15, 46);
+        
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(11);
+        doc.text(purchaseObj.supplier || purchaseObj.client || 'Proveedor General', 15, 52);
+
+        // 3. Tabla (Cabecera)
+        doc.setFillColor(254, 242, 242); // #fef2f2 background
+        doc.rect(15, 60, 180, 10, 'F');
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("Descripción", 18, 66.5);
+        doc.text("Cant.", 100, 66.5, { align: 'center' });
+        doc.text("Costo c/u", 140, 66.5, { align: 'right' });
+        doc.text("Monto Total", 192, 66.5, { align: 'right' });
+
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(15, 70, 195, 70);
+
+        // 4. Tabla (Ítems)
+        doc.setFont("helvetica", "normal");
+        let y = 77;
+        
         purchaseObj.items.forEach(item => {
-            itemsRows += `
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.name}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align:center;">${item.qty}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align:right;">$${item.price.toFixed(2)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align:right;">$${item.subtotal.toFixed(2)}</td>
-                </tr>
-            `;
+            if (y > 270) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.text(item.name.substring(0, 45), 18, y);
+            doc.text(item.qty.toString(), 100, y, { align: 'center' });
+            doc.text(`$${item.price.toFixed(2)}`, 140, y, { align: 'right' });
+            doc.text(`$${item.subtotal.toFixed(2)}`, 192, y, { align: 'right' });
+            
+            doc.setDrawColor(230, 230, 230);
+            doc.line(15, y+3, 195, y+3);
+            y += 10;
         });
 
-        const pdfContainer = document.createElement('div');
-        pdfContainer.style.background = 'white';
-        pdfContainer.style.color = 'black';
-        pdfContainer.style.padding = '30px';
-        pdfContainer.style.width = '100%';
-        pdfContainer.style.boxSizing = 'border-box';
-        pdfContainer.style.fontFamily = "'Helvetica Neue', Helvetica, Arial, sans-serif";
-        
-        pdfContainer.innerHTML = `
-            <div>
-                <div style="display:flex; justify-content:space-between; border-bottom: 2px solid #ef4444; padding-bottom: 20px; margin-bottom: 30px;">
-                    <div>
-                        <h1 style="color: #ef4444; margin:0; font-size:32px;">Registro de Compra</h1>
-                        <p style="margin:5px 0; color:#666;">Sistema ERP Interno - Consolidado</p>
-                    </div>
-                    <div style="text-align:right;">
-                        <h2 style="margin:0; font-size:24px; color:#333;">COMPRA INGRESO</h2>
-                        <p style="margin:5px 0;">Folio: 0001-${purchaseObj.id.toString().slice(-6)}</p>
-                        <p style="margin:5px 0;">Fecha: ${dateStr}</p>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 30px;">
-                    <h3 style="margin-bottom:10px; font-size:18px; color:#ef4444;">A FAVOR DEL PROVEEDOR/COMERCIO:</h3>
-                    <p style="margin:0; font-size:16px;"><b>${purchaseObj.supplier || purchaseObj.client || 'Proveedor General'}</b></p>
-                </div>
-
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-                    <thead>
-                        <tr style="background:#fef2f2; text-align:left;">
-                            <th style="padding: 12px 10px; border-bottom:2px solid #ddd;">Descripción</th>
-                            <th style="padding: 12px 10px; border-bottom:2px solid #ddd; text-align:center;">Cant.</th>
-                            <th style="padding: 12px 10px; border-bottom:2px solid #ddd; text-align:right;">Costo c/u</th>
-                            <th style="padding: 12px 10px; border-bottom:2px solid #ddd; text-align:right;">Monto Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${itemsRows}
-                    </tbody>
-                </table>
-
-                <div style="display:flex; justify-content:flex-end;">
-                    <div style="width: 300px;">
-                        <div style="display:flex; justify-content:space-between; padding: 10px 0;">
-                            <span>Subtotal:</span>
-                            <span>$${purchaseObj.subtotal.toFixed(2)}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 2px solid #ddd;">
-                            <span>IVA Retenido (${purchaseObj.taxPercent}%):</span>
-                            <span>$${purchaseObj.taxValue.toFixed(2)}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; padding: 15px 0; font-size:20px; font-weight:bold; color:#ef4444;">
-                            <span>TOTAL PAGADO:</span>
-                            <span>$${purchaseObj.total.toFixed(2)}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        const opt = {
-            margin:       0.4,
-            filename:     'Reporte_Compra_' + purchaseObj.supplier.replace(/ /g, '_') + '.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
-
-        if (window.html2pdf) {
-            // Using raw HTML string bypasses aggressive browser DOM viewport rendering bugs.
-            // const rawHTML = pdfContainer.outerHTML; // This line was commented out in the original, but the change implies using pdfContainer directly.
-
-            window.html2pdf().set(opt).from(pdfContainer).save().then(async () => {
-                 await this.render(this.container); 
-            }).catch(async err => {
-                 console.error("PDF Error:", err);
-                 await this.render(this.container);
-            });
+        // 5. Totales (Footer)
+        y += 10;
+        if (y > 250) {
+            doc.addPage();
+            y = 20;
         }
+        
+        doc.setFontSize(11);
+        doc.text("Subtotal:", 140, y);
+        doc.text(`$${purchaseObj.subtotal.toFixed(2)}`, 192, y, { align: 'right' });
+        
+        y += 8;
+        doc.text(`IVA Retenido (${purchaseObj.taxPercent}%):`, 140, y);
+        doc.text(`$${purchaseObj.taxValue.toFixed(2)}`, 192, y, { align: 'right' });
+
+        y += 8;
+        doc.setDrawColor(220, 220, 220);
+        doc.line(130, y-4, 195, y-4);
+        
+        doc.setTextColor(239, 68, 68);
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("TOTAL PAGADO:", 135, y+3);
+        doc.text(`$${purchaseObj.total.toFixed(2)}`, 192, y+3, { align: 'right' });
+
+        // Save exactly with jsPDF without DOM interference
+        doc.save(`Reporte_Compra_${purchaseObj.supplier.replace(/ /g, '_')}.pdf`);
+        this.render(this.container);
     }
 };
