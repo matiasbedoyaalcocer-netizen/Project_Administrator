@@ -57,7 +57,9 @@ export default {
                 const dateStr = new Date(s.date).toLocaleDateString();
                 listHtml += `
                     <div class="list-item">
-                        <div class="receipt-thumb"><i class='bx bxs-file-pdf' style="color:var(--danger); font-size:1.8rem;"></i></div>
+                        <div class="receipt-thumb btn-redownload-pdf" data-id="${s.id}" style="cursor:pointer;" title="Re-descargar PDF Documento">
+                            <i class='bx bxs-file-pdf' style="color:var(--danger); font-size:1.8rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></i>
+                        </div>
                         <div class="list-info">
                             <h4>Entidad: ${s.supplier || s.client || 'Comercio / Proveedor'}</h4>
                             <p>${dateStr} • #${s.id.toString().slice(-4)}</p>
@@ -190,6 +192,23 @@ export default {
             const selectedOption = selectProd.options[selectProd.selectedIndex];
             if(selectedOption.value) priceInput.value = selectedOption.getAttribute('data-price');
             else priceInput.value = '';
+        });
+
+        document.querySelectorAll('.btn-redownload-pdf').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.getAttribute('data-id'), 10);
+                const purchase = this.purchases.find(p => p.id === id);
+                if(purchase) {
+                    const originalHTML = e.currentTarget.innerHTML;
+                    e.currentTarget.innerHTML = "<i class='bx bx-loader-alt bx-spin' style='color:var(--primary); font-size:1.8rem;'></i>";
+                    
+                    // Add slight delay to allow UI to update the loading spinner before thread blocks
+                    setTimeout(() => {
+                        this.generateAndDownloadPDF(purchase, viewList, viewForm);
+                        e.currentTarget.innerHTML = originalHTML;
+                    }, 100);
+                }
+            });
         });
 
         btnNew.addEventListener('click', () => {
