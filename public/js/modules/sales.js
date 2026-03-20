@@ -428,28 +428,18 @@ export default {
             margin:       0.5,
             filename:     'Reporte_Compra_' + purchaseObj.supplier.replace(/ /g, '_') + '.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, windowWidth: 1000 },
+            html2canvas:  { scale: 2, useCORS: true, logging: true },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
         if (window.html2pdf) {
-            // Put it *behind* the current app with z-index, but well within normal viewport coords
-            // to bypass html2canvas aggressive off-screen culling.
-            pdfContainer.style.position = 'absolute';
-            pdfContainer.style.top = '0px';
-            pdfContainer.style.left = '0px';
-            pdfContainer.style.zIndex = '-9999'; 
-            
-            document.body.appendChild(pdfContainer);
+            // Using raw HTML string bypasses aggressive browser DOM viewport rendering bugs.
+            const rawHTML = pdfContainer.outerHTML;
 
-            window.html2pdf().set(opt).from(pdfContainer).save().then(async () => {
-                 document.body.removeChild(pdfContainer);
+            window.html2pdf().set(opt).from(rawHTML).save().then(async () => {
                  await this.render(this.container); 
             }).catch(async err => {
                  console.error("PDF Error:", err);
-                 if(document.body.contains(pdfContainer)) {
-                     document.body.removeChild(pdfContainer);
-                 }
                  await this.render(this.container);
             });
         }
